@@ -41,8 +41,8 @@ Below we show two examples of data from one of the detectors, one with a very hi
 *	Using AdamW, RangerLars+Lookahead optimizer
 *	Cosine annealing learning rate scheduler with warmup
 ### Ensemble 
-*	Covariance matrix adaptation evolution strategy (CMA-ES) optimization
-*	15 1D Models + 8 2D Models in our submissions
+* 15 1D Models + 8 2D Models in our submissions
+*	Weight optimization/polynomial features, with Covariance matrix adaptation evolution strategy (CMA-ES) optimizer.
 
 # 4.	Details
 
@@ -138,7 +138,7 @@ First, to confirm that train and test data are similar and do not have any hidde
 
 We tried many different methods to ensemble the models and saw the following trend for their performance: Weight optimization > Neural Network > other methods. For weight optimization, using covariance matrix adaptation evolution strategy optimizer(CMA-ES) is better than using Scipy optimizers, and using logits(log-odds) is better than using rank of probabilities or probabilities themselves.
 
-For our first submission, we generate degree-2 polynomial features from model predictions with sklearn.preprocessing.PolynomialFeatures and then use CME-ES optimizer for weight optimization. It brings the highest CV but it comes with a small chance of overfitting. We tested it on the public LB. The score is good and we think it's not showing signs of overfitting. We were glad that it turned out to be our best submission(private LB 0.8829).
+For our first submission, we generate degree-2 polynomial features from model predictions with sklearn.preprocessing.PolynomialFeatures and then use CME-ES optimizer for optimization. It brings the highest CV but it comes with a small chance of overfitting. We tested it on the public LB. The score is good and we think it's not showing signs of overfitting. We were glad that it turned out to be our best submission(private LB 0.8829).
 
 Our second submission combines weight optimization, bootstrapping and mimicing private LB data. We do this for two reasons: 
 * We found the CV and public LB correlation is very high. We also used adversarial validation to check that indeed training and testing data are similar. By mimicing private LB in training data, models can potentially get a better performance at the private LB. 

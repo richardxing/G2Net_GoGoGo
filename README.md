@@ -10,6 +10,10 @@ One approach used by researchers to find the trace of GW signals is a computatio
 
 In this competition, people aim to detect GW signals from the mergers of binary black holes. Specifically, people build models to analyze simulated GW time-series data from a network of Earth-based detectors. The data are time series of 2-seconds(length 4096, with sampling rate 2048Hz) chunks containing simulated gravitational wave measurements from a network of 3 gravitational wave interferometers (LIGO Hanford, LIGO Livingston, and Virgo). Each time series contains either detector noise or detector noise plus a simulated gravitational wave signal. The task is to identify whether a GW signal is present in the data. The training set has 560k samples and the test set has 226k samples. The metrics for this competition is area under the ROC curve between the predicted probability and the observed target.
 
+Below we show an example of data with a very high SNR, from one of the detectors
+![img](./pics/wave.PNG )
+
+
 # 3.	Summary 
 (It should be noted that all the number estimations for improvement of the model(boost) from the methods mentioned below in this report depend on when the methods are applied. Models are harder to improve when their scores are higher, because the mistakenly classified samples are usually lower SNR samples. 1bps=0.0001, a term borrowed from finance industry.)
 
@@ -85,6 +89,13 @@ larger network depth (extra ResBlocks), smaller/larger conv size in the extracto
 Among the various preprocessing approaches we tried, we found that whitening, which we discussed earlier, was the most effective preprocessing for signals. We performed Constant Q transformation (CQT) or Continuous Wave Transformation (CWT) on the whitened time series data. Then we created 2D models for these spectrograms/scalograms.
 We tried various augmentations for 2D images (mixup, cutout, …), but most of them did not work here, however mixup on the input waveform prior to CQT/CWT did help counteract overfitting. The most effective one was the augmentation of swapping LIGO signals. This worked both for training and inference (TTA, Test Time Augmentation).
 The performance of our best single 2D model is 0.8787/0.8805/0.8787 at CV, public, and private LB. 
+
+We show here two examples(one easy, with high SNR, another hard, with low SNR) after applying CQT on the time series.
+![img](./pics/CQT_easy.PNG)
+![img](./pics/CQT_hard.PNG)
+
+
+
 
 Here are some more details:
 *	CQT and CWT spectrogram/scalogram generated based on the whitened signal

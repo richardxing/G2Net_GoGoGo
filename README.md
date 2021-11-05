@@ -34,7 +34,7 @@ In this competition, people aim to detect GW signals from the mergers of binary 
 *	Using AdamW, RangerLars+Lookahead optimizer
 *	Cosine annealing learning rate scheduler with warmup
 ### Ensemble 
-*	CMA-ES optimization
+*	Covariance matrix adaptation evolution strategy (CMA-ES) optimization
 *	15 1D Models + 8 2D Models in our submissions
 
 # 4.	Details
@@ -68,7 +68,7 @@ Merge of the extracted features instead of the original signal mitigates the eff
 
 **Data augmentation and test-time augmentation (TTA)** 
 
-Augmentation is very effective for 1D CNN models, compared to 2D models. We used vertical flip, shuffle LIGO channels, Gaussian noise, time shift, time mask and Monte Carlo dropout. Data augmentation and TTA gives a big boost. A rough estimation would be 25~40 bps. We noticed that augmentations that were too aggressive hurts the performance of the model. Also, the boost from augmentation plateaus when adding more augmentations on top of others. 
+Augmentation is very effective for 1D CNN models, compared to 2D models. We used vertical flip, shuffle LIGO channels, Gaussian noise, time shift, time mask and Monte Carlo dropout. Data augmentation and TTA gives a big boost. A rough estimation would be 25~45 bps. We noticed that augmentations that were too aggressive hurts the performance of the model. Also, the boost from augmentation plateaus when adding more augmentations on top of others. 
 
 
 **Training procedure for 1D models**
@@ -104,29 +104,39 @@ This idea is coming from curriculum learning, and in this paper, it mentioned th
 
 **Pseudo Labels**
 
-We assign labels to test data based on a model prediction and then we use test data together with train data to build a new model. It gave a big boost to our models. For Pseudo Labels (PL), here are some important points:
-*	PL should be leak free to have reliable cross validation. Don’t mix models trained on different folds to generate PL. 
-*	Soft PL(probabilities between 0 to 1) works better than hard PL (0 and 1 values). 
-*	Using updated PL (Progressive PL) helps model performance. For example, our best single model with 0.8820 private LB can improve to 0.8824 private LB by using PL from our best models, which can make to rank No. 5 by itself. 
+We assign labels to test data based on a prediction from an earlier model and then we use test data together with train data on a new model. It gave a big boost to our models. Here are some important points for Pseudo-Labelling (PL):
+*	PL should be leak free to ensure reliable cross validation. Don’t mix models trained on different folds to generate PL. 
+*	Soft PL(probabilities between 0 and 1) works better than hard PL (0 and 1 targets). 
+*	Using progressive PL(PL from the most updated model everytime) helps model performance. For example, our best single model with 0.8820 private LB can improve to 0.8824 private LB by using PL from our best models, which can make to rank No. 5 by itself. 
 
 **Rank Loss**
-* Invented by iafoss in a previous competition. This is a loss function that aims to rank targets correctly. 
-* Rank loss is similar to a loss function such as ROC-star, which is a loss function designed to maximize the ROC-AUC score while avoiding to have discontinuity such as that in ROC-AUC metric to facilitate optimization
+* Invented by iafoss in a previous competition. This is a loss function that aims to rank samples correctly. 
+* Rank loss is similar to a loss function such as ROC-star, which is a loss function designed to maximize the ROC-AUC score and to facilitate optimization, while avoiding discontinuities such as those in ROC-AUC metric.
+* Post-train with rank loss gives ~1bps performance boost
 
 ## 6)	Ensemble
+
 First, to confirm that train and test data are similar and do not have any hidden peculiarities, we used adversarial validation and found that it gave 0.50 AUC score, implying that train and test data are indistinguishable.
 
-We tried many different methods to ensemble the models and saw the following relative performance trend: CME-ES with Logit > CME-ES with rank> Scipy Optimization > Neural Network > other methods. We also used sklearn.preprocessing.PolynomialFeatures with probability prediction to do the CME-ES optimization. It brings the highest CV and LB but with a small chance of overfitting. We are glad that it turns out to be our best 0.8829 submission.
+We tried many different methods to ensemble the models and saw the following trend for their performance: Weight optimization > Neural Network > other methods. For weight optimization, using covariance matrix adaptation evolution strategy optimizer(CMA-ES) is better than using Scipy optimizers, and using logits(log-odds) is better than using rank of probabilities or probabilities themselves.
 
-Our second submission is based on bootstrapping the data and excluding 16% (which is the percentage of public LB data among all test data) of our OOF data out of CV optimization and then performing average for the obtained weights. We do this for two reasons: (1) we found the CV and public LB correlation is very high and we also used adversarial validation to check that indeed training and testing data are similar. (2) Boostrapping and averaging weights makes the produced model weights more robust to the data noise and potentially can lead to a better performance at the private LB. So we bootstrapped and excluded 16% OOF data which has a similar CV score to our public LB score and the optimized CV score for the remaining data turned out to match the private LB score(0.8828). 
+For our first submission, we generate degree-2 polynomial features from model predictions with sklearn.preprocessing.PolynomialFeatures and then use CME-ES optimizer for weight optimization. It brings the highest CV but it comes with a small chance of overfitting. We tested it on the public LB. The score is good and we think it's not showing signs of overfitting. We were glad that it turned out to be our best submission(private LB 0.8829).
+
+Our second submission combines weight optimization, bootstrapping and mimicing private LB data. We do this for two reasons: 
+* We found the CV and public LB correlation is very high. We also used adversarial validation to check that indeed training and testing data are similar. By mimicing private LB in training data, models can potentially get a better performance at the private LB. 
+* Boostrapping data and averaging the obtained weights makes the produced model weights more robust against the data noise. 
+
+We mimicked the private LB data by excluding 16% (which is the percentage of public LB data among all the test data) of our OOF data which has a similar score to our public LB score, and optimized weights for models on the remaining data and then performed averaging for the obtained weights. The CV score turned out to match the private LB score exactly(0.8828).  
 
 # 5.	My Experiences and Lessons
-In this competition, I mostly worked on pipeline building/optimization, signal whitening, 1D models and data augmentation/TTA and ensemble (scipy optimize method). My teammates and I think the most important things in our models are preprocessing(whitening) and 1D networks, and I am proud to say that I contributed a lot to these areas.
-I started this competition working alone. The first things I did was to read all the discussion, understanding one of the most voted public kernel by Nakama and reading relevant papers related to GW and CNN published by physicists. Almost all people on the discussion forum talk about CQT and 2D CNN models, while some of the papers I read claim that 1D CNN performs better than 2D CNN working on spectrograms. 
 
-After I understand the baseline code from published kernel by Nakama and modified it so that it runs very efficiently, I decided to focus on the approach of 1D CNN models for the following reasons: (1) the majority of published papers use 1D CNN directly on the time series; (2) I think 1D models will be very different from 2D models and it will make a great ensemble and good for later team merging. At the beginning, I couldn’t make 1D model work (AUC around 0.500) because I didn’t do whitening as preprocessing. After I successfully found out the creative way to estimate PSD and perform whitening preprocessing, the AUC scores are finally no longer 0.500. I tested the whitening on 2D CNN models, and it also gives a big boost (~30 bps). 
+In this competition, I mostly worked on pipeline building/optimization, signal whitening, 1D models, data augmentation/TTA, Pseudo-Labelling, and model ensemble (scipy optimize method for weight optimization). My teammates and I think the most important things in our models are preprocessing(whitening) and 1D networks, and I am proud to say that I contributed a lot to these areas.
 
-After this stage, I realized that I need to learn from others and team up to get better results. So I teamed up with Vincent. He focused on 2D models and I continue to improve on 1D models. The ensemble of 1D model and 2D model was indeed very useful as expected and we got to silver zone. We were aiming for gold medal and therefore thought we should enlarge our team. We formed a five-men team when there were two and a half weeks left. During the last 1.5 weeks, I got a lot of help on 1D model from Iafoss, who is very experienced in CNN (and promoted to competition grand master from the gold medal of this competition) and came up with the idea of separating the three channels at first and then merging later. We improved the 1D model together and the performance increased greatly. 
+I started this competition working alone. The first things I did was to read all the discussion and all relevant papers related to GW and CNN published by physicists. Almost all people on the discussion forum talked about CQT and 2D CNN models, while some of the papers I read claim that 1D CNN on time series performs better than 2D CNN on spectrograms. 
+
+After understanding one of the most voted published kernel/code by Nakama and modified it so that the code runs very efficiently, I decided to focus on the approach of 1D CNN models for the following reasons: (1) the majority of published papers use 1D CNN directly on the time series; (2) I think 1D models will be very different from 2D models and it will make a great ensemble and good for later team merging. At the beginning, I couldn’t make 1D model work (AUC around 0.500) because I didn’t do whitening as preprocessing. After I successfully found out the creative way to estimate PSD and perform whitening preprocessing, the AUC scores are finally no longer 0.500. I tested the whitening on 2D CNN models, and it also gives a big boost (~30 bps). I continued to improve 1D models by designing better network architectures and discovering useful augmentations.
+
+After this stage(about one month), I realized that I need to learn from others and team up to get better results. So I teamed up with Vincent. He focused on 2D models and I continued to work on 1D models. The ensemble of 1D model and 2D model was indeed very useful as expected and we got to silver zone. We were aiming for the gold medal and therefore thought we should enlarge our team. We formed a five-men team when there were two and a half weeks left. During the last 1.5 weeks, I got a lot of help on 1D models from iafoss, who is very experienced in CNN (and promoted to competition grand master from the gold medal of this competition) and came up with the brilliant idea of separating the three channels at first and then merging later. We improved the 1D model together and the model performance increased greatly. 
 
 Some of the most important lessons I learned:
 *	Balance thinking and doing. Sometimes one needs to experiment 10 ideas to find one that works. Sometimes thinking can lead to a way that can’t be found by experiments without intuition.

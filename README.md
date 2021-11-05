@@ -114,7 +114,7 @@ We assign labels to test data based on a prediction from an earlier model and th
 * Rank loss is similar to a loss function such as ROC-star, which is a loss function designed to maximize the ROC-AUC score and to facilitate optimization, while avoiding discontinuities such as those in ROC-AUC metric.
 * Post-train with rank loss gives ~1bps performance boost
 
-## 6)	Ensemble
+## 5)	Ensemble
 
 First, to confirm that train and test data are similar and do not have any hidden peculiarities, we used adversarial validation and found that it gave 0.50 AUC score, implying that train and test data are indistinguishable.
 

@@ -92,7 +92,7 @@ Among the various preprocessing approaches we tried, we found that whitening, wh
 We tried various augmentations for 2D images (mixup, cutout, …), but most of them did not work here, however mixup on the input waveform prior to CQT/CWT did help counteract overfitting. The most effective one was the augmentation of swapping LIGO signals. This worked both for training and inference (TTA, Test Time Augmentation).
 The performance of our best single 2D model is 0.8787/0.8805/0.8787 at CV, public, and private LB. 
 
-We show here two examples of spectrograms(one easy, with high SNR, another hard, with low SNR) after applying CQT on the time series.
+We show here two examples of spectrograms with GW in it(one easy to identify, with high SNR, another hard to classify correctly, with low SNR) after applying CQT on the time series.
 
 ![img](./pics/CQT_easy.PNG)
 ![img](./pics/CQT_hard.PNG)

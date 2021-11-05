@@ -113,6 +113,9 @@ Here are some more details:
 
 ## 4) Training
 
+We use 5 folds stratified cross validation. For training, we use binary cross entropy loss function, AdamW and RangerLars+Lookahead optimizer and cosine annealing learning rate scheduler with warmup. There are other important aspects related to training elaborated below. 
+
+
 **Pretraining with self-synthetic GW data**
 
 This idea is coming from curriculum learning, and in this paper, it mentioned that “We find that the deep learning algorithms can generalize low signal-to-noise ratio (SNR) signals to high SNR ones but not vice versa”. So we synthesize data GW signals and inject them into the noise, giving low SNR. We tried to find a distribution of 15 GW parameters that is similar to competition data. Even though there are 15 parameters, we found that the most important one is the total mass and mass ratio (maybe we are wrong) because it affects the shape of GW the most through eyeballing. So we adjust the total mass and mass ratio using different distributions and inject the signal into the noise with a given SNR following max(Gaussian(3.6,1),1) distribution. This SNR distribution is determined by checking the training loss trend: we want it to follow the trend of original data (not too hard, not too simple). Pretraining with our synthetic data helps the performance (2~8bps). We also tried to follow this idea of giving difficult positive samples from the train data more weight, but we didn’t make it work due to time constraints.

@@ -49,7 +49,8 @@ Below we show two examples of data from one of the detectors, one with a very hi
 ## 1)	Preprocessing
 Regarding whitening, direct use of packages, such as pycbc(which is the "official" package for LIGO/Virgo), doesn’t work mainly because of the short duration of the provided signals: only 2 seconds chunks in contrast to the almost unlimited length of data from LIGO/Virgo detectors. To make the estimated PSD smooth, pycbc package uses an algorithm that corrupts the boundary of data, which is too costly for our dataset, whose duration of signals is only 2 seconds. We reduce the variance of estimated PSD by taking the average PSD for all negative training samples. This is the key to make whitening work (interestingly, this averaging idea came up independently by me and my teammate Anjum before our team merging).
 
-This figure below shows the estimated PSD in log-log scale. Notice that the lower frequency power densities is much higher than higher frequency ones
+This figure below shows the estimated PSD in log-log scale. Notice that the lower frequency power densities is much higher than higher frequency ones.
+
 ![img](./pics/psd_log_log.png)
 
 To further reduce the boundary effect from discontinuity and allow ourselves to use a window function that has a larger decay area (for example, Tukey window with a larger alpha), we first extend the wave while keeping the first derivative continuous at boundaries. Finally, we apply the window function to each data and use the average PSD to normalize the wave for different frequencies.

@@ -164,13 +164,13 @@ After understanding one of the most voted published kernel/code by Nakama and mo
 After this stage(about one month), I realized that I need to learn from others and team up to get better results. So I teamed up with Vincent. He focused on 2D models and I continued to work on 1D models. The ensemble of 1D model and 2D model was indeed very useful as expected and we got to silver zone. We were aiming for the gold medal and therefore thought we should enlarge our team. We formed a five-men team when there were two and a half weeks left. During the last 1.5 weeks, I got a lot of help on 1D models from iafoss, who is very experienced in CNN (and promoted to competition grand master from the gold medal of this competition) and came up with the brilliant idea of separating the three channels at first and then merging later. We improved the 1D model together and the model performance increased greatly. 
 
 Some of the most important lessons I learned:
-*	Balance thinking and doing. Sometimes one needs to experiment 10 ideas to find one that works. Sometimes thinking can lead to a way that can’t be found by experiments without intuition.
+*	Find the balance between thinking and doing. Sometimes one needs to experiment 10 ideas to find one that works. Sometimes thinking can lead to a way that can’t be found by experiments without intuition.
 *	Focus on the most important things. For example, I focused on 1D model from the very beginning and sticked with it until the end of competition. Even if I knew this was the right approach I should follow, it still took a lot of effort to not abandon it or be distracted, because it was very hard to make 1D models work as well (or better than, as it turns out) 2D models, and few teams were working on 1D models.
 *	We should’ve spent more time on synthesizing data. It was the main reason the 1st place is so far ahead of others. We guessed that 1st place was so far ahead amid the competition because they use synthetic data, but we didn’t spend enough time on it. The boost from our synthetic data is too little. It could lead us to win the 1st place if we make it work better. 
-*	It’s better to change only one thing at a time.
-*	Computation resources are important.
-*	Fast iteration is important. One way is to use smaller model or less data. 
-*	Teaming up strategies are important and great teammates are more than crucial(unless you want a solo gold).
+*	It’s better to change only one thing at a time in the model, so that one can track what works.
+*	Computation resources are important. Fast iteration is important. One way is to use smaller model or less data. 
+*	Strategies of teaming up are important and great teammates are more than crucial(unless you want a solo gold).
+*	Hardworking pays off.
 
 # 6.	Code
 As a winner and required by the competition, we open sourced our codes. It can be found here: https://github.com/richardxing/G2Net_GoGoGo

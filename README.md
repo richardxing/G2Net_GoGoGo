@@ -4,16 +4,18 @@ I want to express my gratitude to my outstanding teammates iafoss, vincentwang25
 The write-up is based on our posted solution(https://www.kaggle.com/c/g2net-gravitational-wave-detection/discussion/275617), which is the result of the cumulative efforts of all our team members. I modified it to make it more pedagogical and added several sections to include my experiences in the competition and some of my thoughts after the competition is over.
 
 # 2.	Overview of the competition
-Gravitational waves (GW) are predicted by Einstein’s general theory of relativity. They are ripples in the fabric of space-time. Currently, we have 3 GW detectors (LIGO Hanford, LIGO Livingston, and Virgo) on the earth. GW can produce unimaginably tiny strains on the detectors. Even the detectors are some of the most sensitive instruments on the planet, the signals are buried in detector noise. Therefore, the data from the detectors are time series, mostly with very low signal to noise ratio. 
+Gravitational waves (GW) are predicted by Einstein’s general theory of relativity. They are ripples in the fabric of space-time. Currently, we have 3 GW detectors (LIGO Hanford, LIGO Livingston, and Virgo) on the earth. GW can produce unimaginably tiny strains on the detectors. Even the detectors are some of the most sensitive instruments on the planet, the signals are buried in detector noise. Therefore, the data from the detectors are time series, mostly with very low signal to noise ratio(SNR). 
 
 One approach used by researchers to find the trace of GW signals is a computational method called matched-filtering. However, it requires to compare the time series data with a huge number of templates, for each data sample. This method is very computational demanding. To discover gravitational waves more efficiently and accurately, people use machine learning methods. 
 
-In this competition, people aim to detect GW signals from the mergers of binary black holes. Specifically, people build models to analyze simulated GW time-series data from a network of Earth-based detectors. The data are time series of 2-seconds(length 4096, with sampling rate 2048Hz) chunks containing simulated gravitational wave measurements from a network of 3 gravitational wave interferometers (LIGO Hanford, LIGO Livingston, and Virgo). Each time series contains either detector noise or detector noise plus a simulated gravitational wave signal. The task is to identify whether a GW signal is present in the data. The training set has 560k samples and the test set has 226k samples. The metrics for this competition is area under the ROC curve between the predicted probability and the observed target.
+In this competition, people aim to detect GW signals from the mergers of binary black holes. Specifically, people build models to analyze simulated GW time-series data from a network of Earth-based detectors. The data are time series of 2-seconds(length 4096, with sampling rate 2048Hz) chunks containing simulated gravitational wave measurements from a network of 3 gravitational wave interferometers (LIGO Hanford, LIGO Livingston, and Virgo). Each time series contains either detector noise or detector noise plus a simulated gravitational wave signal. The task is to identify whether a GW signal is present in the data. The training set has 560k samples and the test set has 226k samples. The SNR is generally low, and in some cases almost undetectable. The metrics for this competition is area under the ROC curve between the predicted probability and the observed target.
 
-Below we show two examples of data from one of the detectors, one with a very high SNR (GW can be seen with naked eyes), another with low to medium SNR.
+Below we show a few examples of data, the first figure is the raw wave for GW150914(first detected GW, with very high SNR) from one of the detectors; the second figure is the processed wave for GW150914 from two of the detectors, using whitening and bandpassing, you can see a clear signal around 0.42 second(because the SNR is high); the third figure is an example wave from the competition dataset.
 
-<img src="./pics/wave.PNG" width="240">
-<img src="./pics/wave_not_easy.PNG" width="240">
+
+<img src="./pics/GW150914_raw.PNG" width="240">
+<img src="./pics/GW150914_whiten.PNG" width="240">
+<img src="./pics/wave_1.PNG" width="240">
 
 
 

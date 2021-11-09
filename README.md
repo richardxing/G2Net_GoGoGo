@@ -13,9 +13,9 @@ In this competition, people aim to detect GW signals from the mergers of binary 
 Below we show a few examples of data, the first figure is the raw wave for GW150914(first detected GW, with very high SNR) from one of the detectors; the second figure is the processed wave for GW150914 from two of the detectors, using whitening and bandpassing, you can see a clear signal around 0.42 second(because the SNR is high); the third figure is an example wave from the competition dataset.
 
 
-<img src="./pics/GW150914_raw.PNG" width="240">
-<img src="./pics/GW150914_whiten.PNG" width="240">
-<img src="./pics/wave_1.PNG" width="240">
+<img src="./pics/GW150914_raw.PNG" width="360">
+<img src="./pics/GW150914_whiten.PNG" width="360">
+<img src="./pics/wave_1.PNG" width="360">
 
 
 
@@ -53,7 +53,7 @@ Regarding whitening, direct use of packages, such as pycbc(which is the "officia
 
 This figure below shows the estimated PSD in log-log scale. Notice that the power densities of lower frequency is much higher than those of higher frequency, and also the two PSD curves from LIGO detectors are overlapping.
 
-<img src="./pics/psd_log_log.PNG" width="240">
+<img src="./pics/psd_log_log.PNG" width="360">
 
 
 To further reduce the boundary effect from discontinuity and allow ourselves to use a window function that has a larger decay area (for example, Tukey window with a larger alpha), we first extend the wave while keeping the first derivative continuous at boundaries. Finally, we apply the window function to each data and use the average PSD to normalize the wave for different frequencies.
